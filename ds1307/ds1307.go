@@ -42,12 +42,9 @@ func (d *Device) SetTime(t time.Time) error {
 }
 
 // ReadTime returns the date and time
-func (d *Device) ReadTime() (time.Time, error) {
+func (d *Device) ReadTime() (time.Time) {
 	data := make([]byte, 8)
-	err := d.bus.ReadRegister(d.Address, uint8(TimeDate), data)
-	if err != nil {
-		return time.Time{}, err
-	}
+	d.bus.ReadRegister(d.Address, uint8(TimeDate), data)
 	seconds := bcdToDec(data[0] & 0x7F)
 	minute := bcdToDec(data[1])
 	hour := hoursBCDToInt(data[2])
@@ -57,7 +54,7 @@ func (d *Device) ReadTime() (time.Time, error) {
 	year += 2000
 
 	t := time.Date(year, month, day, hour, minute, seconds, 0, time.UTC)
-	return t, nil
+	return t
 }
 
 // Seek sets the offset for the next Read or Write on SRAM to offset, interpreted
